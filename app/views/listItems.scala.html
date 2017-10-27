@@ -1,0 +1,152 @@
+@(
+ed: Editor,
+form: Form[EditorForm.EditorData]
+)(
+implicit request: MessagesRequestHeader
+)
+
+@main("Editor") {
+
+@defining(Array(
+'class -> "form-control",
+'_showConstraints -> false
+)) { bs =>
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <span class="navbar-brand">
+                    @{ed.name} @* TODO remove, DEBUG only: <tt>@{ed.mode}</tt> *@
+                </span>
+            </div>
+
+            @for((value, ico, label) <- List(
+            ("img", "picture", "Convert"),
+            ("main", "list", "Palette"),
+            ("rgb", "edit", "New Color"))) {
+            @helper.form(routes.EditorController.navigate(value), 'class -> "navbar-left") {
+            @helper.CSRF.formField
+            <button class="btn btn-default">
+                <span class="glyphicon glyphicon-@ico"></span>
+                @label
+            </button>
+            }
+            }
+        </div>
+    </nav>
+
+    @if(!request.flash.data.isEmpty || form.hasGlobalErrors) {
+    <div class="panel panel-default">
+
+        <div class="panel-body">
+            @request.flash.data.map{ case (name, value) =>
+            <div>
+                <span class="glyphicon glyphicon-info-sign"></span>
+                @name: @value
+            </div>
+            }
+
+            @if(form.hasGlobalErrors) {
+            @form.globalErrors.map { error: FormError =>
+            <div>
+                @error.key: @error.message
+            </div>
+            }
+            }
+        </div>
+    </div>
+    }
+
+    @if(ed.mode == "main"){
+    <div class="panel panel-default" id="tab">
+        <div class="panel-heading">Colors</div>
+
+        <div class="panel-body">
+            <table class="table unseen-tab">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Status</th>
+                    <th>Name</th>
+                    <th>R</th>
+                    <th>G</th>
+                    <th>B</th>
+                    <th>Code</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                @for(w <- ed.colors) {
+                <tr>
+                    <td>
+                        @helper.form(routes.EditorController.toggleItem(w.code)) {
+                        @helper.CSRF.formField
+                        <button class="btn btn-@if(w.active){success}else{danger}">
+                            <span class="glyphicon glyphicon-off"></span>
+                        </button>
+                        }
+                    </td>
+                    <td>@if(w.active) { Active } else { Inactive }</td>
+                    <td>@w.name</td>
+                    <td>@w.r</td>
+                    <td>@w.g</td>
+                    <td>@w.b</td>
+                    <td>@w.code</td>
+                    <td>
+                        @helper.form(routes.EditorController.deleteItem(w.code)) {
+                        @helper.CSRF.formField
+                        <button class="btn btn-danger">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                        }
+                    </td>
+                </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    }
+
+    @if(ed.mode == "img"){
+    <div class="panel panel-default" id="img">
+        <div class="panel-heading">Original image and pattern</div>
+        <div class="panel-body">
+            @helper.form(routes.EditorController.loadImage) {
+            @helper.CSRF.formField
+            @helper.inputText(form("url"), ('_label -> "Image URL") +: bs : _*)
+            <button class="btn btn-default">
+                <span class="glyphicon glyphicon-refresh"></span>
+                Reload
+            </button>
+            }
+            <img src="@{routes.EditorController.getImage(ed.url)}" />
+            <img src="@{routes.EditorController.processImage(ed.url)}" /> <!-- TODO: width="@ed.img.w" height="@ed.img.h" -->
+        </div>
+    </div>
+    }
+
+    @if(ed.mode == "rgb"){
+    <div class="panel panel-default" id="rgb">
+        <div class="panel-heading">Add color</div>
+        <div class="panel-body">
+            @helper.form(routes.EditorController.createItem) {
+            @helper.CSRF.formField
+            @for((label, field) <- List(
+            "Color Name" -> "colorName",
+            "Red" -> "r",
+            "green" -> "g",
+            "blue" -> "b",
+            )){
+            @helper.inputText(form(field), ('_label -> label) +: bs : _*)
+            }
+            <button class="btn btn-default">
+                <span class="glyphicon glyphicon-floppy-disk"></span> Save
+            </button>
+            }
+        </div>
+    </div>
+    }
+</div>
+}
+}

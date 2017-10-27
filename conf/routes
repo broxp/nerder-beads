@@ -1,0 +1,24 @@
+# Routes
+# Home page
+GET     /                           controllers.EditorController.index
+
+# Widgets
+GET     /editor                     controllers.EditorController.listItems
+POST    /editor                     controllers.EditorController.createItem
+
+POST    /reload                     controllers.EditorController.loadImage
+
+# Edit
+POST    /deleteItem/:id             controllers.EditorController.deleteItem(id: String)
+POST    /toggleItem/:id             controllers.EditorController.toggleItem(id: String)
+
+# Nav
+POST    /navigate/:id               controllers.EditorController.navigate(id: String)
+
+# Image
+GET     /editor/:id                 controllers.EditorController.getImage(id: String)
+GET     /convert/:id                controllers.EditorController.processImage(id: String)
+
+# Static Assets
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+

@@ -1,0 +1,14 @@
+/** https://elvery.net/demo/responsive-tables */
+@media only screen and (max-width: 800px) {
+	.unseen-tab td:nth-child(2),
+	.unseen-tab th:nth-child(2) {display: none;}
+}
+
+@media only screen and (max-width: 640px) {
+	.unseen-tab th:nth-child(4),
+	.unseen-tab td:nth-child(4),
+	.unseen-tab td:nth-child(7),
+	.unseen-tab th:nth-child(7),
+	.unseen-tab td:nth-child(8),
+	.unseen-tab th:nth-child(8){display: none;}
+}

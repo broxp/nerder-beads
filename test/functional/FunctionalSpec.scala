@@ -1,0 +1,4 @@
+package functional
+
+class FunctionalSpec {
+}

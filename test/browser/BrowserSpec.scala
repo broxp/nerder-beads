@@ -1,0 +1,4 @@
+package browser
+
+class BrowserSpec {
+}

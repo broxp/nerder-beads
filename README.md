@@ -1,2 +1,5 @@
-# nerder-beads
-Nerder Beads: image to bead pattern converter
+# Nerder Beads
+
+A simple image to bead pattern converter using Scala Play!
+
+
